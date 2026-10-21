@@ -1,0 +1,37 @@
+# ===== Haskell =====
+# Artefactos de compilación e intermedios
+*.o
+*.hi
+*.dyn_o
+*.dyn_hi
+*.chi
+*.chs.h
+*.prof
+*.hp
+*.eventlog
+
+# Build tools
+dist-newstyle/
+dist/
+.stack-work/
+cabal.project.local
+cabal.project.local~
+
+# Binarios generados
+haskell/Main
+haskell/main
+*.exe
+
+# ===== Prolog =====
+*.qlf
+*.plt
+
+# ===== Sistema =====
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ===== Editores =====
+.vscode/
+.idea/
+*.swp

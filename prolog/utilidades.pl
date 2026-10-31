@@ -18,3 +18,24 @@ minutos_a_hora(Minutos, HoraStr) :-
     formato_dos_digitos(M, MStr),
     string_concat(HStr, ":", Temp),
     string_concat(Temp, MStr, HoraStr).
+
+    
+
+/* Normaliza el dia ingresado por el usuario */
+normalizar_dia(Entrada, "L")  :- string_lower(Entrada, D), member(D, ["l", "lunes"]).
+normalizar_dia(Entrada, "M")  :- string_lower(Entrada, D), member(D, ["m", "martes"]).
+normalizar_dia(Entrada, "Mi") :- string_lower(Entrada, D), member(D, ["mi", "miercoles", "miércoles"]).
+normalizar_dia(Entrada, "J")  :- string_lower(Entrada, D), member(D, ["j", "jueves"]).
+normalizar_dia(Entrada, "V")  :- string_lower(Entrada, D), member(D, ["v", "viernes"]).
+normalizar_dia(Entrada, "S")  :- string_lower(Entrada, D), member(D, ["s", "sabado", "sábado"]).
+normalizar_dia(Entrada, "D")  :- string_lower(Entrada, D), member(D, ["d", "domingo"]).
+
+/* Verifica si un vuelo opera en el dia consultado */
+opera_dia(DiasVueloStr, DiaConsulta) :-
+    normalizar_dia(DiaConsulta, _),
+    string_lower(DiasVueloStr, "diario"), !.
+
+opera_dia(DiasVueloStr, DiaConsulta) :-
+    normalizar_dia(DiaConsulta, DiaNorm),
+    split_string(DiasVueloStr, "-", "", ListaDias),
+    member(DiaNorm, ListaDias).

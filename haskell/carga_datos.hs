@@ -18,7 +18,7 @@ cargar_vuelos ruta = do
     let lista_lineas = lines contenido
     -- checkeamos y quedamos con las lineas que no eestan vacias
     let lineas_validas = filter (\l -> l /= "") lista_lineas
-    let vuelos = map parsear_linea lista_validas
+    let vuelos = map parsear_linea lineas_validas
     return vuelos
 
 

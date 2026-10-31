@@ -1,6 +1,6 @@
 
 /*esto le dice a prolog que habra una instancia vuelo con 7 argumentos para consumir el archivo vuelos.txt*/
-
+:- consult('utilidades.pl').
 :- dynamic vuelo/7.
 
 
@@ -8,18 +8,29 @@
 
 cargar_datos(Ruta):-
     open(Ruta,read,Stream),
-
+    /*se agrega para ir borrando los duplicados */
+    retractall(vuelo(_, _, _, _, _, _, _)),
     leer_lineas(Stream), close(Stream).
 
 /*caso base*/
 leer_lineas(Stream):-
-    read_line_to_string(Stream,end_of_file),!.
+    at_end_of_stream(Stream), !.
+
 
 /*String completo: linea que se acaba de leer Separadadores: caracteres para cortar en este caso el | CaracteresBorrar: sobrantes como \r\n listaresultados: la lista donde pondra las variables resultantes*/
+/*caso recursivo*/
 leer_lineas(Stream):-
     read_line_to_string(Stream,Linea),
-    split_string(Linea,"|","\r\n",[Origen,Destino,Salida,Llegada,Precio,Codigo,Dias]),
-    assertz(vuelo(Origen,Destino,Salida,Llegada,Precio,Codigo,Dias)),
+    /*procesar las lineas*/
+    ( Linea == "" ->
+        true
+    ;
+        split_string(Linea, "|", "\r\n", [Origen, Destino, SalidaStr, LlegadaStr, PrecioStr, Codigo, Dias]),
+        hora_a_minutos(SalidaStr, SalidaMin),
+        hora_a_minutos(LlegadaStr, LlegadaMin),
+        number_string(PrecioNum, PrecioStr),
+        assertz(vuelo(Origen, Destino, SalidaMin, LlegadaMin, PrecioNum, Codigo, Dias))
+    ),
     leer_lineas(Stream).
 
 

@@ -3,7 +3,41 @@
 :- consult('utilidades.pl').
 :- dynamic vuelo/7.
 
+/* ===============================================================
+   Configuración Global del TMC (Tiempo Mínimo de Conexión)
+   Valor por defecto: 45 minutos (configurable dinámicamente) 
+   ===============================================================
+   */
+:- dynamic tmc/1.
+tmc(45).
 
+
+obtener_tmc(Minutos) :-
+    tmc(Minutos), !.
+
+/* Actualiza el TMC global */
+establecer_tmc(NuevoMin) :-
+    integer(NuevoMin),
+    NuevoMin >= 0,
+    retractall(tmc(_)),
+    assertz(tmc(NuevoMin)).
+
+/* ===============================================================
+               Consultas Básicas de Vuelos por Ciudad 
+   ===============================================================
+    */
+
+
+vuelos_desde(Ciudad, Vuelos) :-
+    findall(vuelo(Ciudad, Dest, Sal, Lleg, Prec, Cod, Dias),
+            vuelo(Ciudad, Dest, Sal, Lleg, Prec, Cod, Dias),
+            Vuelos).
+
+
+vuelos_hacia(Ciudad, Vuelos) :-
+    findall(vuelo(Org, Ciudad, Sal, Lleg, Prec, Cod, Dias),
+            vuelo(Org, Ciudad, Sal, Lleg, Prec, Cod, Dias),
+            Vuelos).
 
 
 cargar_datos(Ruta):-
@@ -32,6 +66,3 @@ leer_lineas(Stream):-
         assertz(vuelo(Origen, Destino, SalidaMin, LlegadaMin, PrecioNum, Codigo, Dias))
     ),
     leer_lineas(Stream).
-
-
- 

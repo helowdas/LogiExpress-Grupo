@@ -2,13 +2,13 @@
 main :: IO ()
 main = do
     
-    putStrLn "  ░▒▓█►─═  𝗟𝗼𝗴𝗶𝗘𝘅𝗽𝗿𝗲𝘀𝘀 - 𝗦𝗶𝘀𝘁𝗲𝗺𝗮 𝗱𝗲 𝗚𝗲𝘀𝘁𝗶ó𝗻 𝗔é𝗿𝗲𝗮 ═─◄█▓▒░ "
+    putStrLn "   Logi Express - Sistema de Gestion Area  "
     
     bucleMenu
 
 bucleMenu :: IO ()
 bucleMenu = do
-    putStrLn "\n ꧁༒༺ Menu ༻༒꧂ "
+    putStrLn "\n Menu  "
     putStrLn "1. Cargar archivo de vuelos"
     putStrLn "2. Consultar vuelos que salen de una ciudad"
     putStrLn "3. Consultar vuelos que llegan a una ciudad"

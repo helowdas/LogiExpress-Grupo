@@ -22,9 +22,9 @@ establecer_tmc(NuevoMin) :-
     retractall(tmc(_)),
     assertz(tmc(NuevoMin)).
 
-/* ===============================================================
-               Consultas Básicas de Vuelos por Ciudad 
-   ===============================================================
+/* ===============================================
+      Consultas Básicas de Vuelos por Ciudad 
+   ===============================================
     */
 
 
@@ -46,13 +46,18 @@ cargar_datos(Ruta):-
     retractall(vuelo(_, _, _, _, _, _, _)),
     leer_lineas(Stream), close(Stream).
 
-/*caso base*/
+/*===============
+    caso base
+  ===============
+*/
 leer_lineas(Stream):-
     at_end_of_stream(Stream), !.
 
 
 /*String completo: linea que se acaba de leer Separadadores: caracteres para cortar en este caso el | CaracteresBorrar: sobrantes como \r\n listaresultados: la lista donde pondra las variables resultantes*/
-/*caso recursivo*/
+/*=============
+ caso recursivo
+==============*/
 leer_lineas(Stream):-
     read_line_to_string(Stream,Linea),
     /*procesar las lineas*/

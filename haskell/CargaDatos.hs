@@ -1,3 +1,5 @@
+module CargaDatos where
+
 import Data.List (nub)
 
 data Vuelo = Vuelo{
@@ -50,6 +52,18 @@ hora_a_minutos hora =
     case dividir_por ':' hora of 
         [h,m] -> (read h :: Int) * 60 + (read m :: Int) 
         _ -> error ("Formato Invalido: " ++ hora)
+
+-- Convierte minutos desde las 00:00 a formato "HH:MM"
+minutos_a_hora :: Int -> String
+minutos_a_hora minutos =
+    let h = minutos `div` 60
+        m = minutos `mod` 60
+    in dos_digitos h ++ ":" ++ dos_digitos m
+
+dos_digitos :: Int -> String
+dos_digitos n
+    | n < 10 = '0' : show n
+    | otherwise = show n
 
 parsear_linea :: String -> Vuelo
 parsear_linea linea = case dividir_por '|' linea of 

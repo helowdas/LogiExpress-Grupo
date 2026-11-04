@@ -35,34 +35,34 @@ LogiExpress-Grupo/
 ### Fase 1 - Módulo 1: Carga dinámica y consultas básicas (23 al 29 de octubre)
 
 Haskell:
-- [ ] Modelo de datos: `data Vuelo`, `type Grafo`
-- [ ] Parseo de `vuelos.txt` (split por `|`, conversión HH:MM a minutos)
-- [ ] Conversión de días (`Diario`, `L-M-Mi-J-V`) a lista de días
-- [ ] Consultas: vuelos desde una ciudad / hacia una ciudad
-- [ ] Menú interactivo en consola (módulo Main)
+- [x] Modelo de datos: `data Vuelo`, `type Grafo`
+- [x] Parseo de `vuelos.txt` (split por `|`, conversión HH:MM a minutos)
+- [x] Conversión de días (`Diario`, `L-M-Mi-J-V`) a lista de días
+- [x] Consultas: vuelos desde una ciudad / hacia una ciudad
+- [x] Menú interactivo en consola (módulo Main)
 
 Prolog:
-- [ ] Predicado `vuelo/7` dinámico y carga desde archivo (`assertz`)
-- [ ] Conversión de tiempo HH:MM <-> minutos
-- [ ] Consultas: `vuelos_desde/2`, `vuelos_hacia/2` con `findall/3`
-- [ ] Menú interactivo (`iniciar` / `menu`)
+- [x] Predicado `vuelo/7` dinámico y carga desde archivo (`assertz`)
+- [x] Conversión de tiempo HH:MM <-> minutos
+- [x] Consultas: `vuelos_desde/2`, `vuelos_hacia/2` con `findall/3`
+- [x] Menú interactivo (`iniciar` / `menu`)
 
 ### Fase 2 - Módulo 2: Búsqueda avanzada de rutas (30 de octubre al 3 de noviembre)
 
-- [ ] Configuración global del TMC (Tiempo Mínimo de Conexión, ej. 45 min)
-- [ ] DFS recursivo sobre el grafo con lista de visitados (control de ciclos)
-- [ ] Validación de escala: salida(V2) >= llegada(V1) + TMC
-- [ ] Compatibilidad de frecuencia: el vuelo debe operar el día consultado
-- [ ] Límite opcional de escalas K
-- [ ] Reporte de todas las rutas válidas origen -> destino en un día dado
+- [x] Configuración global del TMC (Tiempo Mínimo de Conexión, ej. 45 min)
+- [x] DFS recursivo sobre el grafo con lista de visitados (control de ciclos)
+- [x] Validación de escala: salida(V2) >= llegada(V1) + TMC
+- [x] Compatibilidad de frecuencia: el vuelo debe operar el día consultado
+- [x] Límite opcional de escalas K
+- [x] Reporte de todas las rutas válidas origen -> destino en un día dado
 
 ### Fase 3 - Módulo 3: Optimización y filtrado de listas (4 al 6 de noviembre)
 
-- [ ] Ruta de costo económico mínimo (sumatoria de precios)
-- [ ] Ruta de menor tiempo total (llegada final - salida inicial, incluye esperas)
-- [ ] Algoritmo de ordenamiento implementado sobre listas (quicksort o mergesort propio, no usar `sort` de librería para el reporte)
-- [ ] Reporte ordenado de itinerarios por costo o por tiempo
-- [ ] Menú con todas las opciones funcionando en ambos lenguajes
+- [x] Ruta de costo económico mínimo (sumatoria de precios)
+- [x] Ruta de menor tiempo total (llegada final - salida inicial, incluye esperas)
+- [x] Algoritmo de ordenamiento implementado sobre listas (quicksort o mergesort propio, no usar `sort` de librería para el reporte)
+- [x] Reporte ordenado de itinerarios por costo o por tiempo
+- [x] Menú con todas las opciones funcionando en ambos lenguajes
 
 ### Fase 4 - Informe y cierre (7 y 8 de noviembre)
 

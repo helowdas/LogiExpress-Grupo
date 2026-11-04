@@ -11,8 +11,8 @@ LogiExpress-Grupo/
 ├── README.md        # Este archivo: compilación, ejecución y estado del proyecto
 ├── vuelos.txt       # Base de datos de prueba (20 vuelos, formato pipe |)
 ├── .gitignore
-├── /haskell         # Solución en Paradigma Funcional (módulo Main + CLI)
-├── /prolog          # Solución en Paradigma Lógico (predicado iniciar/menu + CLI)
+├── /haskell         # Solución en Paradigma Funcional (CargaDatos, Rutas, Optimizacion, Main)
+├── /prolog          # Solución en Paradigma Lógico (carga_datos, utilidades, rutas, optimizacion, main)
 └── /docs            # Plan de ejecución e informe técnico comparativo (PDF)
 ```
 
@@ -28,20 +28,23 @@ LogiExpress-Grupo/
 Ejecutar **desde la raíz del repositorio** (para que encuentre `vuelos.txt`):
 
 ```bash
-runghc haskell/Main.hs
+runghc -ihaskell haskell/Main.hs
 ```
 
 O en modo interactivo:
 
 ```bash
-ghci haskell/Main.hs
+ghci -ihaskell haskell/Main.hs
 > main
 ```
 
 ### Solución Lógica (Prolog)
 
+Los `consult` usan rutas relativas, por lo que se debe ejecutar desde la carpeta `prolog`:
+
 ```bash
-swipl -s prolog/main.pl
+cd prolog
+swipl -s main.pl
 ```
 
 Luego en la consola de SWI-Prolog:
@@ -68,13 +71,13 @@ Maiquetia|Porlamar|09:00|10:00|4800|Vlo#2|L-M-Mi-J-V
 
 | Módulo | Haskell | Prolog |
 |--------|---------|--------|
-| Módulo 1: Carga dinámica y consultas básicas | Pendiente | Pendiente |
-| Módulo 2: Búsqueda avanzada de rutas (DFS, TMC, escalas) | Pendiente | Pendiente |
-| Módulo 3: Optimización doble criterio y ordenamiento | Pendiente | Pendiente |
+| Módulo 1: Carga dinámica y consultas básicas | Completado | Completado |
+| Módulo 2: Búsqueda avanzada de rutas (DFS, TMC, escalas) | Completado | Completado |
+| Módulo 3: Optimización doble criterio y ordenamiento | Completado | Completado |
 | Informe técnico comparativo (PDF en /docs) | Pendiente | |
 
-> Proyecto en fase de inicialización: estructura del repositorio creada y cronograma definido.
-> La implementación de los módulos comienza según el plan de ejecución.
+> Módulos 1 a 3 implementados y verificados en ambos lenguajes
+> (GHC 9.10.3 y SWI-Prolog 10.0.2). Pendiente: informe comparativo y tag `v1.0-final`.
 
 ## Plan de ejecución
 

@@ -101,8 +101,7 @@ ejecutar_opcion("5") :-
     write('Día del viaje (ej. L, martes, Diario): '),
     read_line_to_string(user_input, Dia),
     leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
-    construir_filtro_escalas(MaxEscalas, Filtros),
-    reporte_itinerarios(Origen, Destino, Dia, escalas, Filtros),
+    mostrar_rutas(Origen, Destino, Dia, MaxEscalas),
     bucle_menu.
 
 % Opción 6: Ruta de costo mínimo y ruta de menor tiempo

@@ -94,8 +94,9 @@ ejecutarOpcion "5" vuelos tmc
         diaConsulta <- pedir "Dia del viaje (ej. L, martes, Diario): "
         textoEscalas <- pedir "Maximo de escalas [Enter = sin limite]: "
         let filtros = sinFiltros { maxEscalas = leerEnteroOpcional textoEscalas }
-            rutas = buscar_rutas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
-            ordenadas = ordenarRutas "escalas" (filtrarRutas filtros rutas)
+            rutas = buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
+                    (maxEscalas filtros)
+            ordenadas = ordenarRutas "escalas" rutas
         mostrarReporte ciudadOrigen ciudadDestino diaConsulta "escalas" ordenadas
         bucleMenu vuelos tmc
 
@@ -110,8 +111,8 @@ ejecutarOpcion "6" vuelos tmc
         textoEscalas <- pedir "Maximo de escalas [Enter = sin limite]: "
         let filtros = sinFiltros { maxEscalas = leerEnteroOpcional textoEscalas }
             candidatas =
-                filtrarRutas filtros
-                    (buscar_rutas vuelos tmc ciudadOrigen ciudadDestino diaConsulta)
+                buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
+                    (maxEscalas filtros)
         case (rutaMinCosto candidatas, rutaMinTiempo candidatas) of
             (Just rutaEconomica, Just rutaRapida) -> do
                 putStrLn "\n=== Ruta de costo economico minimo ==="
@@ -141,8 +142,9 @@ ejecutarOpcion "7" vuelos tmc
                 , maxCosto = leerDoubleOpcional textoCosto
                 , maxTiempo = leerEnteroOpcional textoTiempo
                 }
-            rutas = buscar_rutas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
-            ordenadas = ordenarRutas criterio (filtrarRutas filtros rutas)
+        let rutas = buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
+                (maxEscalas filtros)
+        let ordenadas = ordenarRutas criterio (filtrarRutas filtros rutas)
         mostrarReporte ciudadOrigen ciudadDestino diaConsulta criterio ordenadas
         bucleMenu vuelos tmc
 
@@ -155,9 +157,8 @@ ejecutarOpcion _ vuelos tmc = do
     putStrLn "\nOpcion invalida. Intente de nuevo."
     bucleMenu vuelos tmc
 
--- ===============================================================
+
 -- Predicados auxiliares (entrada/salida y formato)
--- ===============================================================
 
 -- Solicita un dato mostrando un mensaje
 pedir :: String -> IO String
@@ -211,7 +212,7 @@ mostrarReporte ciudadOrigen ciudadDestino diaConsulta criterio rutas
         putStrLn ""
         putStrLn (descripcionRutas rutas)
 
--- Parseo de enteros y decimales opcionales (Nothing si el texto es invalido)
+-- Parseo de enteros y decimales opcionales 
 leerEntero :: String -> Maybe Int
 leerEntero texto =
     case reads texto of
@@ -221,14 +222,17 @@ leerEntero texto =
 leerEnteroOpcional :: String -> Maybe Int
 leerEnteroOpcional texto
     | null texto = Nothing
-    | otherwise = leerEntero texto
+    | otherwise =
+        case leerEntero texto of
+            Just numero | numero >= 0 -> Just numero
+            _ -> Nothing
 
 leerDoubleOpcional :: String -> Maybe Double
 leerDoubleOpcional texto
     | null texto = Nothing
     | otherwise =
         case reads texto of
-            [(numero, "")] -> Just numero
+            [(numero, "")] | numero >= 0 -> Just numero
             _ -> Nothing
 
 -- Impresion de un vuelo individual (consultas basicas)

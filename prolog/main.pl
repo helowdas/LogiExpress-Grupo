@@ -48,32 +48,38 @@ ejecutar_opcion("1") :-
 
 % Opción 2: Consultar vuelos que salen de una ciudad
 ejecutar_opcion("2") :-
-    nl,
-    write('Ingrese la ciudad de origen: '),
-    read_line_to_string(user_input, Ciudad),
-    vuelos_desde(Ciudad, Vuelos),
-    (   Vuelos = []
-    ->  format('~nNo se encontraron vuelos saliendo de "~w".~n', [Ciudad])
-    ;   format('~nVuelos saliendo de ~w:~n', [Ciudad]),
-        imprimir_separador,
-        imprimir_lista_vuelos(Vuelos)
-    ),
-    bucle_menu.
+    (   verificar_vuelos_cargados
+    ->  nl,
+        write('Ingrese la ciudad de origen: '),
+        read_line_to_string(user_input, Ciudad),
+        vuelos_desde(Ciudad, Vuelos),
+        (   Vuelos = []
+        ->  format('~nNo se encontraron vuelos saliendo de "~w".~n', [Ciudad])
+        ;   format('~nVuelos saliendo de ~w:~n', [Ciudad]),
+            imprimir_separador,
+            imprimir_lista_vuelos(Vuelos)
+        ),
+        bucle_menu
+    ;   bucle_menu
+    ).
 
 
 % Opción 3: Consultar vuelos que llegan a una ciudad
 ejecutar_opcion("3") :-
-    nl,
-    write('Ingrese la ciudad de destino: '),
-    read_line_to_string(user_input, Ciudad),
-    vuelos_hacia(Ciudad, Vuelos),
-    (   Vuelos = []
-    ->  format('~nNo se encontraron vuelos llegando a "~w".~n', [Ciudad])
-    ;   format('~nVuelos llegando a ~w:~n', [Ciudad]),
-        imprimir_separador,
-        imprimir_lista_vuelos(Vuelos)
-    ),
-    bucle_menu.
+    (   verificar_vuelos_cargados
+    ->  nl,
+        write('Ingrese la ciudad de destino: '),
+        read_line_to_string(user_input, Ciudad),
+        vuelos_hacia(Ciudad, Vuelos),
+        (   Vuelos = []
+        ->  format('~nNo se encontraron vuelos llegando a "~w".~n', [Ciudad])
+        ;   format('~nVuelos llegando a ~w:~n', [Ciudad]),
+            imprimir_separador,
+            imprimir_lista_vuelos(Vuelos)
+        ),
+        bucle_menu
+    ;   bucle_menu
+    ).
 
 % Opción 4: Configuración TMC
 ejecutar_opcion("4") :-
@@ -96,62 +102,74 @@ ejecutar_opcion("4") :-
 
 % Opción 5: Buscar rutas válidas entre dos ciudades
 ejecutar_opcion("5") :-
-    nl,
-    write('Ciudad de origen: '),
-    read_line_to_string(user_input, Origen),
-    write('Ciudad de destino: '),
-    read_line_to_string(user_input, Destino),
-    write('Día del viaje (ej. L, martes, Diario): '),
-    read_line_to_string(user_input, Dia),
-    leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
-    mostrar_rutas(Origen, Destino, Dia, MaxEscalas),
-    bucle_menu.
+    (   verificar_vuelos_cargados
+    ->  nl,
+        write('Ciudad de origen: '),
+        read_line_to_string(user_input, Origen),
+        write('Ciudad de destino: '),
+        read_line_to_string(user_input, Destino),
+        write('Día del viaje (ej. L, martes, Diario): '),
+        read_line_to_string(user_input, Dia),
+        leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
+        mostrar_rutas(Origen, Destino, Dia, MaxEscalas),
+        bucle_menu
+    ;   bucle_menu
+    ).
 
 % Opción 6: Ruta de costo económico mínimo
 ejecutar_opcion("6") :-
-    nl,
-    write('Ciudad de origen: '),
-    read_line_to_string(user_input, Origen),
-    write('Ciudad de destino: '),
-    read_line_to_string(user_input, Destino),
-    write('Día del viaje (ej. L, martes, Diario): '),
-    read_line_to_string(user_input, Dia),
-    leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
-    mostrar_optimizacion_criterio(costo, Origen, Destino, Dia, MaxEscalas),
-    bucle_menu.
+    (   verificar_vuelos_cargados
+    ->  nl,
+        write('Ciudad de origen: '),
+        read_line_to_string(user_input, Origen),
+        write('Ciudad de destino: '),
+        read_line_to_string(user_input, Destino),
+        write('Día del viaje (ej. L, martes, Diario): '),
+        read_line_to_string(user_input, Dia),
+        leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
+        mostrar_optimizacion_criterio(costo, Origen, Destino, Dia, MaxEscalas),
+        bucle_menu
+    ;   bucle_menu
+    ).
 
 % Opción 7: Ruta de menor tiempo total
 ejecutar_opcion("7") :-
-    nl,
-    write('Ciudad de origen: '),
-    read_line_to_string(user_input, Origen),
-    write('Ciudad de destino: '),
-    read_line_to_string(user_input, Destino),
-    write('Día del viaje (ej. L, martes, Diario): '),
-    read_line_to_string(user_input, Dia),
-    leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
-    mostrar_optimizacion_criterio(tiempo, Origen, Destino, Dia, MaxEscalas),
-    bucle_menu.
+    (   verificar_vuelos_cargados
+    ->  nl,
+        write('Ciudad de origen: '),
+        read_line_to_string(user_input, Origen),
+        write('Ciudad de destino: '),
+        read_line_to_string(user_input, Destino),
+        write('Día del viaje (ej. L, martes, Diario): '),
+        read_line_to_string(user_input, Dia),
+        leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
+        mostrar_optimizacion_criterio(tiempo, Origen, Destino, Dia, MaxEscalas),
+        bucle_menu
+    ;   bucle_menu
+    ).
 
 % Opción 8: Reporte ordenado de itinerarios con filtros
 ejecutar_opcion("8") :-
-    nl,
-    write('Ciudad de origen: '),
-    read_line_to_string(user_input, Origen),
-    write('Ciudad de destino: '),
-    read_line_to_string(user_input, Destino),
-    write('Día del viaje (ej. L, martes, Diario): '),
-    read_line_to_string(user_input, Dia),
-    writeln('Criterio de orden: 1 = costo, 2 = tiempo'),
-    write('Seleccione criterio [1]: '),
-    read_line_to_string(user_input, EntradaCriterio),
-    elegir_criterio(EntradaCriterio, Criterio),
-    leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
-    leer_entero_opcional('Costo máximo en $ [Enter = sin límite]: ', MaxCosto),
-    leer_entero_opcional('Tiempo máximo en minutos [Enter = sin límite]: ', MaxTiempo),
-    construir_filtros([max_escalas-MaxEscalas, max_costo-MaxCosto, max_tiempo-MaxTiempo], Filtros),
-    reporte_itinerarios(Origen, Destino, Dia, Criterio, Filtros),
-    bucle_menu.
+    (   verificar_vuelos_cargados
+    ->  nl,
+        write('Ciudad de origen: '),
+        read_line_to_string(user_input, Origen),
+        write('Ciudad de destino: '),
+        read_line_to_string(user_input, Destino),
+        write('Día del viaje (ej. L, martes, Diario): '),
+        read_line_to_string(user_input, Dia),
+        writeln('Criterio de orden: 1 = costo, 2 = tiempo'),
+        write('Seleccione criterio [1]: '),
+        read_line_to_string(user_input, EntradaCriterio),
+        elegir_criterio(EntradaCriterio, Criterio),
+        leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
+        leer_entero_opcional('Costo máximo en $ [Enter = sin límite]: ', MaxCosto),
+        leer_entero_opcional('Tiempo máximo en minutos [Enter = sin límite]: ', MaxTiempo),
+        construir_filtros([max_escalas-MaxEscalas, max_costo-MaxCosto, max_tiempo-MaxTiempo], Filtros),
+        reporte_itinerarios(Origen, Destino, Dia, Criterio, Filtros),
+        bucle_menu
+    ;   bucle_menu
+    ).
 
 % Opción 9: Salir
 ejecutar_opcion("9") :-
@@ -255,4 +273,17 @@ mostrar_optimizacion_criterio(Criterio, Origen, Destino, Dia, MaxEscalas) :-
         ;   writeln('=== Ruta de menor tiempo total ===')
         ),
         imprimir_detalle_ruta(RutaOptima, 1)
+    ).
+
+
+% ===============================================================
+% Verificación de vuelos cargados
+% ===============================================================
+
+verificar_vuelos_cargados :-
+    (   vuelo(_, _, _, _, _, _, _)
+    ->  true
+    ;   nl,
+        writeln('Primero debe cargar un archivo de vuelos (opcion 1).'),
+        fail
     ).

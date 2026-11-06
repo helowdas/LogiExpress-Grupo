@@ -169,11 +169,26 @@ ejecutar_opcion(_) :-
 
 determinar_ruta(Entrada, RutaFinal) :-
     (   Entrada == ""
-    ->  (   exists_file('../vuelos.txt')
-        ->  RutaFinal = '../vuelos.txt'
-        ;   RutaFinal = 'vuelos.txt'
-        )
+    ->  ruta_defecto_vuelos(RutaFinal)
     ;   RutaFinal = Entrada
+    ).
+
+% Busca la ubicación real de vuelos.txt:
+% 1. En la carpeta actual (si se ejecuta desde la raíz: vuelos.txt)
+% 2. En la carpeta superior (si se ejecuta desde prolog/: ../vuelos.txt)
+% 3. Relativo al archivo fuente main.pl (si se abrió desde cualquier otro directorio)
+ruta_defecto_vuelos(RutaFinal) :-
+    (   exists_file('vuelos.txt')
+    ->  RutaFinal = 'vuelos.txt'
+    ;   exists_file('../vuelos.txt')
+    ->  RutaFinal = '../vuelos.txt'
+    ;   source_file(iniciar, ArchivoMain),
+        file_directory_name(ArchivoMain, DirProlog),
+        atomic_list_concat([DirProlog, '/../vuelos.txt'], RutaRelativa),
+        absolute_file_name(RutaRelativa, RutaAbsoluta),
+        exists_file(RutaAbsoluta)
+    ->  RutaFinal = RutaAbsoluta
+    ;   RutaFinal = 'vuelos.txt'
     ).
 
 imprimir_separador :-

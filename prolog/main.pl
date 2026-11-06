@@ -19,14 +19,17 @@ bucle_menu :-
     writeln('3. Consultar vuelos que llegan a una ciudad'),
     writeln('4. Configuración TMC (Tiempo Mínimo de Conexión)'),
     writeln('5. Buscar rutas válidas entre dos ciudades'),
-    writeln('6. Ruta de costo mínimo y ruta de menor tiempo'),
-    writeln('7. Reporte ordenado de itinerarios (costo/tiempo y filtros)'),
-    writeln('8. Salir'),
+    writeln('6. Ruta de costo económico mínimo'),
+    writeln('7. Ruta de menor tiempo total'),
+    writeln('8. Reporte ordenado de itinerarios (costo/tiempo y filtros)'),
+    writeln('9. Salir'),
     write('Seleccione una opción: '),
     read_line_to_string(user_input, Opcion),
     ejecutar_opcion(Opcion).
 
-
+% ===============================================================
+% Ejecución de opciones del Menú
+% ===============================================================
 
 % Opción 1: Cargar archivo de vuelos
 ejecutar_opcion("1") :-
@@ -104,7 +107,7 @@ ejecutar_opcion("5") :-
     mostrar_rutas(Origen, Destino, Dia, MaxEscalas),
     bucle_menu.
 
-% Opción 6: Ruta de costo mínimo y ruta de menor tiempo
+% Opción 6: Ruta de costo económico mínimo
 ejecutar_opcion("6") :-
     nl,
     write('Ciudad de origen: '),
@@ -114,11 +117,24 @@ ejecutar_opcion("6") :-
     write('Día del viaje (ej. L, martes, Diario): '),
     read_line_to_string(user_input, Dia),
     leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
-    mostrar_optimizacion(Origen, Destino, Dia, MaxEscalas),
+    mostrar_optimizacion_criterio(costo, Origen, Destino, Dia, MaxEscalas),
     bucle_menu.
 
-% Opción 7: Reporte ordenado de itinerarios con filtros
+% Opción 7: Ruta de menor tiempo total
 ejecutar_opcion("7") :-
+    nl,
+    write('Ciudad de origen: '),
+    read_line_to_string(user_input, Origen),
+    write('Ciudad de destino: '),
+    read_line_to_string(user_input, Destino),
+    write('Día del viaje (ej. L, martes, Diario): '),
+    read_line_to_string(user_input, Dia),
+    leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
+    mostrar_optimizacion_criterio(tiempo, Origen, Destino, Dia, MaxEscalas),
+    bucle_menu.
+
+% Opción 8: Reporte ordenado de itinerarios con filtros
+ejecutar_opcion("8") :-
     nl,
     write('Ciudad de origen: '),
     read_line_to_string(user_input, Origen),
@@ -137,8 +153,8 @@ ejecutar_opcion("7") :-
     reporte_itinerarios(Origen, Destino, Dia, Criterio, Filtros),
     bucle_menu.
 
-% Opción 8: Salir
-ejecutar_opcion("8") :-
+% Opción 9: Salir
+ejecutar_opcion("9") :-
     nl,
     writeln('¡Gracias por utilizar LogiExpress! Hasta luego.'), !.
 
@@ -210,20 +226,18 @@ construir_filtros([Nombre-Valor | Resto], Filtros) :-
 elegir_criterio("2", tiempo) :- !.
 elegir_criterio(_, costo).
 
-/* Muestra en paralelo la ruta más económica y la más rápida */
-mostrar_optimizacion(Origen, Destino, Dia, MaxEscalas) :-
+/* Muestra la ruta óptima según el criterio seleccionado */
+mostrar_optimizacion_criterio(Criterio, Origen, Destino, Dia, MaxEscalas) :-
     construir_filtro_escalas(MaxEscalas, Filtros),
     buscar_rutas(Origen, Destino, Dia, Rutas),
     filtrar_rutas(Rutas, Filtros, Candidatas),
     (   Candidatas == []
     ->  format('~nNo hay itinerarios de ~w a ~w para el día ~w.~n', [Origen, Destino, Dia])
-    ;   ordenar_rutas(costo, Candidatas, PorCosto),
-        ordenar_rutas(tiempo, Candidatas, PorTiempo),
-        PorCosto = [RutaCosto | _],
-        PorTiempo = [RutaTiempo | _],
+    ;   ordenar_rutas(Criterio, Candidatas, [RutaOptima | _]),
         nl,
-        writeln('=== Ruta de costo económico mínimo ==='),
-        imprimir_detalle_ruta(RutaCosto, 1),
-        writeln('=== Ruta de menor tiempo total ==='),
-        imprimir_detalle_ruta(RutaTiempo, 1)
+        (   Criterio == costo
+        ->  writeln('=== Ruta de costo económico mínimo ===')
+        ;   writeln('=== Ruta de menor tiempo total ===')
+        ),
+        imprimir_detalle_ruta(RutaOptima, 1)
     ).

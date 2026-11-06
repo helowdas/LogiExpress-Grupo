@@ -24,9 +24,10 @@ bucleMenu vuelos tmc = do
     putStrLn "3. Consultar vuelos que llegan a una ciudad"
     putStrLn "4. Configuracion TMC (Tiempo Minimo de Conexion)"
     putStrLn "5. Buscar rutas validas entre dos ciudades"
-    putStrLn "6. Ruta de costo minimo y ruta de menor tiempo"
-    putStrLn "7. Reporte ordenado de itinerarios (costo/tiempo y filtros)"
-    putStrLn "8. Salir"
+    putStrLn "6. Ruta de costo economico minimo"
+    putStrLn "7. Ruta de menor tiempo total"
+    putStrLn "8. Reporte ordenado de itinerarios (costo/tiempo y filtros)"
+    putStrLn "9. Salir"
     putStr "Seleccione una opcion: "
     hFlush stdout
     opcion <- getLine
@@ -100,7 +101,7 @@ ejecutarOpcion "5" vuelos tmc
         mostrarReporte ciudadOrigen ciudadDestino diaConsulta "escalas" ordenadas
         bucleMenu vuelos tmc
 
--- Opcion 6: Ruta de costo minimo y ruta de menor tiempo
+-- Opcion 6: Ruta de costo economico minimo
 ejecutarOpcion "6" vuelos tmc
     | null vuelos = pedirCarga tmc
     | otherwise = do
@@ -113,18 +114,37 @@ ejecutarOpcion "6" vuelos tmc
             candidatas =
                 buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
                     (maxEscalas filtros)
-        case (rutaMinCosto candidatas, rutaMinTiempo candidatas) of
-            (Just rutaEconomica, Just rutaRapida) -> do
+        case rutaMinCosto candidatas of
+            Just rutaEconomica -> do
                 putStrLn "\n=== Ruta de costo economico minimo ==="
                 putStrLn (descripcionRuta rutaEconomica)
-                putStrLn "\n=== Ruta de menor tiempo total ==="
-                putStrLn (descripcionRuta rutaRapida)
-            _ -> putStrLn ("\nNo hay itinerarios de " ++ ciudadOrigen ++ " a "
-                           ++ ciudadDestino ++ " para el dia " ++ diaConsulta ++ ".")
+            Nothing -> putStrLn ("\nNo hay itinerarios de " ++ ciudadOrigen ++ " a "
+                                 ++ ciudadDestino ++ " para el dia " ++ diaConsulta ++ ".")
         bucleMenu vuelos tmc
 
--- Opcion 7: Reporte ordenado de itinerarios con filtros
+-- Opcion 7: Ruta de menor tiempo total
 ejecutarOpcion "7" vuelos tmc
+    | null vuelos = pedirCarga tmc
+    | otherwise = do
+        putStrLn ""
+        ciudadOrigen <- pedir "Ciudad de origen: "
+        ciudadDestino <- pedir "Ciudad de destino: "
+        diaConsulta <- pedir "Dia del viaje (ej. L, martes, Diario): "
+        textoEscalas <- pedir "Maximo de escalas [Enter = sin limite]: "
+        let filtros = sinFiltros { maxEscalas = leerEnteroOpcional textoEscalas }
+            candidatas =
+                buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
+                    (maxEscalas filtros)
+        case rutaMinTiempo candidatas of
+            Just rutaRapida -> do
+                putStrLn "\n=== Ruta de menor tiempo total ==="
+                putStrLn (descripcionRuta rutaRapida)
+            Nothing -> putStrLn ("\nNo hay itinerarios de " ++ ciudadOrigen ++ " a "
+                                 ++ ciudadDestino ++ " para el dia " ++ diaConsulta ++ ".")
+        bucleMenu vuelos tmc
+
+-- Opcion 8: Reporte ordenado de itinerarios con filtros
+ejecutarOpcion "8" vuelos tmc
     | null vuelos = pedirCarga tmc
     | otherwise = do
         putStrLn ""
@@ -148,8 +168,8 @@ ejecutarOpcion "7" vuelos tmc
         mostrarReporte ciudadOrigen ciudadDestino diaConsulta criterio ordenadas
         bucleMenu vuelos tmc
 
--- Opcion 8: Salir
-ejecutarOpcion "8" _ _ =
+-- Opcion 9: Salir
+ejecutarOpcion "9" _ _ =
     putStrLn "\n¡Gracias por utilizar LogiExpress! Hasta luego."
 
 -- Opcion invalida

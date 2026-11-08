@@ -7,7 +7,7 @@ module Utilidades
     , tmcPorDefecto
     ) where
 
-import Data.Char (toLower)
+import Data.Char (toLower, isSpace)
 
 --  TMC por defecto en minutos (configurable)
 tmcPorDefecto :: Int
@@ -23,7 +23,9 @@ minutosAHora totalMin =
 
 -- Normaliza el día ingresado (código o nombre completo) al formato estandar (L, M, Mi, J, V, S, D)
 normalizarDia :: String -> Maybe String
-normalizarDia entrada = case map toLower entrada of
+normalizarDia entrada =
+    let trim = reverse . dropWhile isSpace . reverse . dropWhile isSpace
+    in case map toLower (trim entrada) of
     d | d `elem` ["l", "lunes"]                   -> Just "L"
       | d `elem` ["m", "martes"]                  -> Just "M"
       | d `elem` ["mi", "miercoles", "miércoles"] -> Just "Mi"

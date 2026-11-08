@@ -3,6 +3,8 @@ module Main where
 import CargaDatos
 import Rutas
 import Optimizacion
+import Utilidades (normalizarDia)
+import Data.List (intercalate)
 import System.Directory (doesFileExist)
 import System.IO (hFlush, stdout)
 import Text.Printf (printf)
@@ -43,14 +45,17 @@ ejecutarOpcion "2" vuelos tmc
     | null vuelos = pedirCarga tmc
     | otherwise = do
         putStrLn ""
-        ciudad <- pedir "Ingrese la ciudad de origen: "
-        let encontrados = vuelosDesde ciudad vuelos
-        if null encontrados
-            then putStrLn ("\nNo se encontraron vuelos saliendo de \"" ++ ciudad ++ "\".")
-            else do
-                putStrLn ("\nVuelos saliendo de " ++ ciudad ++ ":")
-                putStrLn separador
-                mapM_ imprimirVuelo encontrados
+        mCiudad <- pedirCiudad "Ingrese la ciudad de origen: " vuelos
+        case mCiudad of
+            Just ciudad -> do
+                let encontrados = vuelosDesde ciudad vuelos
+                if null encontrados
+                    then putStrLn ("\nNo se encontraron vuelos saliendo de \"" ++ ciudad ++ "\".")
+                    else do
+                        putStrLn ("\nVuelos saliendo de " ++ ciudad ++ ":")
+                        putStrLn separador
+                        mapM_ imprimirVuelo encontrados
+            Nothing -> return ()
         bucleMenu vuelos tmc
 
 -- Opcion 3: Consultar vuelos que llegan a una ciudad
@@ -58,14 +63,17 @@ ejecutarOpcion "3" vuelos tmc
     | null vuelos = pedirCarga tmc
     | otherwise = do
         putStrLn ""
-        ciudad <- pedir "Ingrese la ciudad de destino: "
-        let encontrados = vuelosHacia ciudad vuelos
-        if null encontrados
-            then putStrLn ("\nNo se encontraron vuelos llegando a \"" ++ ciudad ++ "\".")
-            else do
-                putStrLn ("\nVuelos llegando a " ++ ciudad ++ ":")
-                putStrLn separador
-                mapM_ imprimirVuelo encontrados
+        mCiudad <- pedirCiudad "Ingrese la ciudad de destino: " vuelos
+        case mCiudad of
+            Just ciudad -> do
+                let encontrados = vuelosHacia ciudad vuelos
+                if null encontrados
+                    then putStrLn ("\nNo se encontraron vuelos llegando a \"" ++ ciudad ++ "\".")
+                    else do
+                        putStrLn ("\nVuelos llegando a " ++ ciudad ++ ":")
+                        putStrLn separador
+                        mapM_ imprimirVuelo encontrados
+            Nothing -> return ()
         bucleMenu vuelos tmc
 
 -- Opcion 4: Configuracion del TMC
@@ -90,15 +98,20 @@ ejecutarOpcion "5" vuelos tmc
     | null vuelos = pedirCarga tmc
     | otherwise = do
         putStrLn ""
-        ciudadOrigen <- pedir "Ciudad de origen: "
-        ciudadDestino <- pedir "Ciudad de destino: "
-        diaConsulta <- pedir "Dia del viaje (ej. L, martes, Diario): "
-        textoEscalas <- pedir "Maximo de escalas [Enter = sin limite]: "
-        let filtros = sinFiltros { maxEscalas = leerEnteroOpcional textoEscalas }
-            rutas = buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
-                    (maxEscalas filtros)
-            ordenadas = ordenarRutas "escalas" rutas
-        mostrarReporte ciudadOrigen ciudadDestino diaConsulta "escalas" ordenadas
+        mOrigenDestino <- pedirOrigenDestino vuelos
+        case mOrigenDestino of
+            Just (ciudadOrigen, ciudadDestino) -> do
+                mDia <- pedirDia
+                case mDia of
+                    Just diaConsulta -> do
+                        mEscalas <- pedirEnteroOpcional "Maximo de escalas [Enter = sin limite]: "
+                        let filtros = sinFiltros { maxEscalas = mEscalas }
+                            rutas = buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
+                                    (maxEscalas filtros)
+                            ordenadas = ordenarRutas "escalas" rutas
+                        mostrarReporte ciudadOrigen ciudadDestino diaConsulta "escalas" ordenadas
+                    Nothing -> return ()
+            Nothing -> return ()
         bucleMenu vuelos tmc
 
 -- Opcion 6: Ruta de costo economico minimo
@@ -106,20 +119,25 @@ ejecutarOpcion "6" vuelos tmc
     | null vuelos = pedirCarga tmc
     | otherwise = do
         putStrLn ""
-        ciudadOrigen <- pedir "Ciudad de origen: "
-        ciudadDestino <- pedir "Ciudad de destino: "
-        diaConsulta <- pedir "Dia del viaje (ej. L, martes, Diario): "
-        textoEscalas <- pedir "Maximo de escalas [Enter = sin limite]: "
-        let filtros = sinFiltros { maxEscalas = leerEnteroOpcional textoEscalas }
-            candidatas =
-                buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
-                    (maxEscalas filtros)
-        case rutaMinCosto candidatas of
-            Just rutaEconomica -> do
-                putStrLn "\n=== Ruta de costo economico minimo ==="
-                putStrLn (descripcionRuta rutaEconomica)
-            Nothing -> putStrLn ("\nNo hay itinerarios de " ++ ciudadOrigen ++ " a "
-                                 ++ ciudadDestino ++ " para el dia " ++ diaConsulta ++ ".")
+        mOrigenDestino <- pedirOrigenDestino vuelos
+        case mOrigenDestino of
+            Just (ciudadOrigen, ciudadDestino) -> do
+                mDia <- pedirDia
+                case mDia of
+                    Just diaConsulta -> do
+                        mEscalas <- pedirEnteroOpcional "Maximo de escalas [Enter = sin limite]: "
+                        let filtros = sinFiltros { maxEscalas = mEscalas }
+                            candidatas =
+                                buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
+                                    (maxEscalas filtros)
+                        case rutaMinCosto candidatas of
+                            Just rutaEconomica -> do
+                                putStrLn "\n=== Ruta de costo economico minimo ==="
+                                putStrLn (descripcionRuta rutaEconomica)
+                            Nothing -> putStrLn ("\nNo hay itinerarios de " ++ ciudadOrigen ++ " a "
+                                                 ++ ciudadDestino ++ " para el dia " ++ diaConsulta ++ ".")
+                    Nothing -> return ()
+            Nothing -> return ()
         bucleMenu vuelos tmc
 
 -- Opcion 7: Ruta de menor tiempo total
@@ -127,20 +145,25 @@ ejecutarOpcion "7" vuelos tmc
     | null vuelos = pedirCarga tmc
     | otherwise = do
         putStrLn ""
-        ciudadOrigen <- pedir "Ciudad de origen: "
-        ciudadDestino <- pedir "Ciudad de destino: "
-        diaConsulta <- pedir "Dia del viaje (ej. L, martes, Diario): "
-        textoEscalas <- pedir "Maximo de escalas [Enter = sin limite]: "
-        let filtros = sinFiltros { maxEscalas = leerEnteroOpcional textoEscalas }
-            candidatas =
-                buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
-                    (maxEscalas filtros)
-        case rutaMinTiempo candidatas of
-            Just rutaRapida -> do
-                putStrLn "\n=== Ruta de menor tiempo total ==="
-                putStrLn (descripcionRuta rutaRapida)
-            Nothing -> putStrLn ("\nNo hay itinerarios de " ++ ciudadOrigen ++ " a "
-                                 ++ ciudadDestino ++ " para el dia " ++ diaConsulta ++ ".")
+        mOrigenDestino <- pedirOrigenDestino vuelos
+        case mOrigenDestino of
+            Just (ciudadOrigen, ciudadDestino) -> do
+                mDia <- pedirDia
+                case mDia of
+                    Just diaConsulta -> do
+                        mEscalas <- pedirEnteroOpcional "Maximo de escalas [Enter = sin limite]: "
+                        let filtros = sinFiltros { maxEscalas = mEscalas }
+                            candidatas =
+                                buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
+                                    (maxEscalas filtros)
+                        case rutaMinTiempo candidatas of
+                            Just rutaRapida -> do
+                                putStrLn "\n=== Ruta de menor tiempo total ==="
+                                putStrLn (descripcionRuta rutaRapida)
+                            Nothing -> putStrLn ("\nNo hay itinerarios de " ++ ciudadOrigen ++ " a "
+                                                 ++ ciudadDestino ++ " para el dia " ++ diaConsulta ++ ".")
+                    Nothing -> return ()
+            Nothing -> return ()
         bucleMenu vuelos tmc
 
 -- Opcion 8: Reporte ordenado de itinerarios con filtros
@@ -148,24 +171,29 @@ ejecutarOpcion "8" vuelos tmc
     | null vuelos = pedirCarga tmc
     | otherwise = do
         putStrLn ""
-        ciudadOrigen <- pedir "Ciudad de origen: "
-        ciudadDestino <- pedir "Ciudad de destino: "
-        diaConsulta <- pedir "Dia del viaje (ej. L, martes, Diario): "
-        putStrLn "Criterio de orden: 1 = costo, 2 = tiempo"
-        textoCriterio <- pedir "Seleccione criterio [1]: "
-        let criterio = if textoCriterio == "2" then "tiempo" else "costo"
-        textoEscalas <- pedir "Maximo de escalas [Enter = sin limite]: "
-        textoCosto <- pedir "Costo maximo en $ [Enter = sin limite]: "
-        textoTiempo <- pedir "Tiempo maximo en minutos [Enter = sin limite]: "
-        let filtros = Filtros
-                { maxEscalas = leerEnteroOpcional textoEscalas
-                , maxCosto = leerDoubleOpcional textoCosto
-                , maxTiempo = leerEnteroOpcional textoTiempo
-                }
-        let rutas = buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
-                (maxEscalas filtros)
-        let ordenadas = ordenarRutas criterio (filtrarRutas filtros rutas)
-        mostrarReporte ciudadOrigen ciudadDestino diaConsulta criterio ordenadas
+        mOrigenDestino <- pedirOrigenDestino vuelos
+        case mOrigenDestino of
+            Just (ciudadOrigen, ciudadDestino) -> do
+                mDia <- pedirDia
+                case mDia of
+                    Just diaConsulta -> do
+                        putStrLn "Criterio de orden: 1 = costo, 2 = tiempo"
+                        textoCriterio <- pedir "Seleccione criterio [1]: "
+                        let criterio = if textoCriterio == "2" then "tiempo" else "costo"
+                        mEscalas <- pedirEnteroOpcional "Maximo de escalas [Enter = sin limite]: "
+                        mCosto <- pedirDoublePositivoOpcional "Costo maximo en $ [Enter = sin limite]: "
+                        mTiempo <- pedirEnteroPositivoOpcional "Tiempo maximo en minutos [Enter = sin limite]: "
+                        let filtros = Filtros
+                                { maxEscalas = mEscalas
+                                , maxCosto = mCosto
+                                , maxTiempo = mTiempo
+                                }
+                        let rutas = buscar_rutas_con_escalas vuelos tmc ciudadOrigen ciudadDestino diaConsulta
+                                (maxEscalas filtros)
+                        let ordenadas = ordenarRutas criterio (filtrarRutas filtros rutas)
+                        mostrarReporte ciudadOrigen ciudadDestino diaConsulta criterio ordenadas
+                    Nothing -> return ()
+            Nothing -> return ()
         bucleMenu vuelos tmc
 
 -- Opcion 9: Salir
@@ -186,6 +214,58 @@ pedir mensaje = do
     putStr mensaje
     hFlush stdout
     getLine
+
+-- Solicita el nombre de una ciudad, recortando espacios y validando
+-- sin distinguir mayúsculas ni minúsculas contra las ciudades de los vuelos.
+-- Si es válida, retorna Just con el nombre oficial registrado; si no,
+-- muestra un mensaje de error y la lista de ciudades disponibles.
+pedirCiudad :: String -> [Vuelo] -> IO (Maybe String)
+pedirCiudad mensaje vuelos = do
+    entrada <- pedir mensaje
+    case normalizarCiudad entrada vuelos of
+        Just oficial -> return (Just oficial)
+        Nothing -> do
+            let entradaLimpia = trim entrada
+            putStrLn ("\nError: La ciudad \"" ++ entradaLimpia ++ "\" no existe en el registro de vuelos.")
+            mostrarCiudadesDisponibles vuelos
+            return Nothing
+
+-- Solicita origen y destino de forma secuencial. Si el origen es inválido,
+-- no solicita el destino.
+pedirOrigenDestino :: [Vuelo] -> IO (Maybe (String, String))
+pedirOrigenDestino vuelos = do
+    mOrigen <- pedirCiudad "Ciudad de origen: " vuelos
+    case mOrigen of
+        Just origen -> do
+            mDestino <- pedirCiudad "Ciudad de destino: " vuelos
+            case mDestino of
+                Just destino
+                    | origen == destino -> do
+                        putStrLn ("\nError: La ciudad de origen y destino no pueden ser iguales (\"" ++ origen ++ "\").")
+                        return Nothing
+                    | otherwise -> return (Just (origen, destino))
+                Nothing -> return Nothing
+        Nothing -> return Nothing
+
+-- Muestra las ciudades disponibles registradas en la lista de vuelos
+mostrarCiudadesDisponibles :: [Vuelo] -> IO ()
+mostrarCiudadesDisponibles vuelos = do
+    let ciudades = ciudadesDisponibles vuelos
+    putStrLn ("Ciudades disponibles: " ++ intercalate ", " ciudades)
+
+-- Solicita el día del viaje y valida que sea un día reconocido.
+-- Si es válido, retorna Just con el día normalizado; si no,
+-- muestra un mensaje de error y retorna Nothing.
+pedirDia :: IO (Maybe String)
+pedirDia = do
+    entrada <- pedir "Dia del viaje (ej. L, martes): "
+    case normalizarDia entrada of
+        Just diaNorm -> return (Just diaNorm)
+        Nothing -> do
+            let entradaLimpia = trim entrada
+            putStrLn ("\nError: \"" ++ entradaLimpia ++ "\" no es un dia valido.")
+            putStrLn "Valores aceptados: L, M, Mi, J, V, S, D (o nombres completos: Lunes, Martes...)."
+            return Nothing
 
 -- Avisa que primero hay que cargar el archivo de vuelos
 pedirCarga :: Int -> IO ()
@@ -232,28 +312,58 @@ mostrarReporte ciudadOrigen ciudadDestino diaConsulta criterio rutas
         putStrLn ""
         putStrLn (descripcionRutas rutas)
 
--- Parseo de enteros y decimales opcionales 
+-- Parseo de enteros y decimales opcionales con validación y reintento
+
 leerEntero :: String -> Maybe Int
 leerEntero texto =
-    case reads texto of
+    case reads (trim texto) of
         [(numero, "")] -> Just numero
         _ -> Nothing
 
-leerEnteroOpcional :: String -> Maybe Int
-leerEnteroOpcional texto
-    | null texto = Nothing
-    | otherwise =
-        case leerEntero texto of
-            Just numero | numero >= 0 -> Just numero
-            _ -> Nothing
+leerDouble :: String -> Maybe Double
+leerDouble texto =
+    case reads (trim texto) of
+        [(numero, "")] -> Just numero
+        _ -> Nothing
 
-leerDoubleOpcional :: String -> Maybe Double
-leerDoubleOpcional texto
-    | null texto = Nothing
-    | otherwise =
-        case reads texto of
-            [(numero, "")] | numero >= 0 -> Just numero
-            _ -> Nothing
+-- Lee un entero opcional >= 0. Si la entrada es inválida, muestra error y solicita reingreso.
+pedirEnteroOpcional :: String -> IO (Maybe Int)
+pedirEnteroOpcional prompt = do
+    entrada <- pedir prompt
+    let entradaLimpia = trim entrada
+    if null entradaLimpia
+        then return Nothing
+        else case leerEntero entradaLimpia of
+            Just val | val >= 0 -> return (Just val)
+            _ -> do
+                putStrLn ("\nError: \"" ++ entradaLimpia ++ "\" no es valido. Debe ingresar un numero entero mayor o igual a 0.")
+                pedirEnteroOpcional prompt
+
+-- Lee un entero opcional positivo (> 0). Si la entrada es inválida, muestra error y solicita reingreso.
+pedirEnteroPositivoOpcional :: String -> IO (Maybe Int)
+pedirEnteroPositivoOpcional prompt = do
+    entrada <- pedir prompt
+    let entradaLimpia = trim entrada
+    if null entradaLimpia
+        then return Nothing
+        else case leerEntero entradaLimpia of
+            Just val | val > 0 -> return (Just val)
+            _ -> do
+                putStrLn ("\nError: \"" ++ entradaLimpia ++ "\" no es valido. Debe ingresar un numero entero mayor a 0.")
+                pedirEnteroPositivoOpcional prompt
+
+-- Lee un número (Double) opcional positivo (> 0). Si la entrada es inválida, muestra error y solicita reingreso.
+pedirDoublePositivoOpcional :: String -> IO (Maybe Double)
+pedirDoublePositivoOpcional prompt = do
+    entrada <- pedir prompt
+    let entradaLimpia = trim entrada
+    if null entradaLimpia
+        then return Nothing
+        else case leerDouble entradaLimpia of
+            Just val | val > 0 -> return (Just val)
+            _ -> do
+                putStrLn ("\nError: \"" ++ entradaLimpia ++ "\" no es valido. Debe ingresar un numero mayor a 0.")
+                pedirDoublePositivoOpcional prompt
 
 -- Impresion de un vuelo individual (consultas basicas)
 imprimirVuelo :: Vuelo -> IO ()

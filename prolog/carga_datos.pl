@@ -27,6 +27,24 @@ establecer_tmc(NuevoMin) :-
    ===============================================
     */
 
+/* Obtiene la lista ordenada y sin duplicados de todas las ciudades con vuelos */
+ciudades_disponibles(Ciudades) :-
+    findall(Orig, vuelo(Orig, _, _, _, _, _, _), Origenes),
+    findall(Dest, vuelo(_, Dest, _, _, _, _, _), Destinos),
+    append(Origenes, Destinos, Todas),
+    sort(Todas, Ciudades).
+
+/* Normaliza el nombre de una ciudad ingresado por el usuario:
+   recorta espacios en blanco y compara sin distinguir mayúsculas ni minúsculas
+   con respecto a las ciudades registradas en la base de datos de vuelos. */
+normalizar_ciudad(Entrada, CiudadOficial) :-
+    normalize_space(string(EntradaLimpia), Entrada),
+    string_lower(EntradaLimpia, EntradaLower),
+    (   vuelo(CiudadOficial, _, _, _, _, _, _)
+    ;   vuelo(_, CiudadOficial, _, _, _, _, _)
+    ),
+    string_lower(CiudadOficial, CiudadLower),
+    EntradaLower == CiudadLower, !.
 
 vuelos_desde(Ciudad, Vuelos) :-
     findall(vuelo(Ciudad, Dest, Sal, Lleg, Prec, Cod, Dias),

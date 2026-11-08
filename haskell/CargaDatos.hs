@@ -1,6 +1,7 @@
 module CargaDatos where
 
-import Data.List (nub)
+import Data.Char (toLower, isSpace)
+import Data.List (nub, sort, find)
 
 data Vuelo = Vuelo{
     origen :: String,
@@ -82,6 +83,25 @@ parsear_linea linea = case dividir_por '|' linea of
 -- ===============================================================
 -- Consultas Básicas de Partidas y Llegadas por Ciudad
 -- ===============================================================
+
+-- Obtiene la lista ordenada y sin duplicados de todas las ciudades con vuelos
+ciudadesDisponibles :: [Vuelo] -> [String]
+ciudadesDisponibles listaVuelos =
+    sort $ nub (map origen listaVuelos ++ map destino listaVuelos)
+
+-- Recorta espacios en blanco en ambos extremos de una cadena
+trim :: String -> String
+trim = f . f
+  where f = reverse . dropWhile isSpace
+
+-- Normaliza el nombre de una ciudad ingresado por el usuario:
+-- recorta espacios en blanco y compara sin distinguir mayúsculas ni minúsculas
+-- con respecto a las ciudades registradas en la lista de vuelos.
+normalizarCiudad :: String -> [Vuelo] -> Maybe String
+normalizarCiudad entrada listaVuelos =
+    let entradaLimpia = map toLower (trim entrada)
+        todasCiudades = ciudadesDisponibles listaVuelos
+    in find (\c -> map toLower c == entradaLimpia) todasCiudades
 
 -- Dada una ciudad C, genera la lista de todos los vuelos que salen de ella
 vuelosDesde :: String -> [Vuelo] -> [Vuelo]

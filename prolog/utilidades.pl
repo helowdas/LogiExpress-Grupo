@@ -22,13 +22,13 @@ minutos_a_hora(Minutos, HoraStr) :-
     
 
 /* Normaliza el dia ingresado por el usuario */
-normalizar_dia(Entrada, "L")  :- string_lower(Entrada, D), member(D, ["l", "lunes"]).
-normalizar_dia(Entrada, "M")  :- string_lower(Entrada, D), member(D, ["m", "martes"]).
-normalizar_dia(Entrada, "Mi") :- string_lower(Entrada, D), member(D, ["mi", "miercoles", "miércoles"]).
-normalizar_dia(Entrada, "J")  :- string_lower(Entrada, D), member(D, ["j", "jueves"]).
-normalizar_dia(Entrada, "V")  :- string_lower(Entrada, D), member(D, ["v", "viernes"]).
-normalizar_dia(Entrada, "S")  :- string_lower(Entrada, D), member(D, ["s", "sabado", "sábado"]).
-normalizar_dia(Entrada, "D")  :- string_lower(Entrada, D), member(D, ["d", "domingo"]).
+normalizar_dia(Entrada, "L")  :- normalize_space(string(S), Entrada), string_lower(S, D), member(D, ["l", "lunes"]), !.
+normalizar_dia(Entrada, "M")  :- normalize_space(string(S), Entrada), string_lower(S, D), member(D, ["m", "martes"]), !.
+normalizar_dia(Entrada, "Mi") :- normalize_space(string(S), Entrada), string_lower(S, D), member(D, ["mi", "miercoles", "miércoles"]), !.
+normalizar_dia(Entrada, "J")  :- normalize_space(string(S), Entrada), string_lower(S, D), member(D, ["j", "jueves"]), !.
+normalizar_dia(Entrada, "V")  :- normalize_space(string(S), Entrada), string_lower(S, D), member(D, ["v", "viernes"]), !.
+normalizar_dia(Entrada, "S")  :- normalize_space(string(S), Entrada), string_lower(S, D), member(D, ["s", "sabado", "sábado"]), !.
+normalizar_dia(Entrada, "D")  :- normalize_space(string(S), Entrada), string_lower(S, D), member(D, ["d", "domingo"]), !.
 
 /* Verifica si un vuelo opera en el dia consultado */
 opera_dia(DiasVueloStr, DiaConsulta) :-

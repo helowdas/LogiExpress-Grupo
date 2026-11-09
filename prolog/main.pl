@@ -8,7 +8,7 @@ iniciar :- menu.
 
 menu :-
     nl,
-    writeln(' LogiExpress - Sistema de Gestión Aérea '),
+    writeln(' LogiExpress - Sistema de Gestion Aerea '),
     bucle_menu.
 
 bucle_menu :-
@@ -17,21 +17,21 @@ bucle_menu :-
     writeln('1. Cargar archivo de vuelos'),
     writeln('2. Consultar vuelos que salen de una ciudad'),
     writeln('3. Consultar vuelos que llegan a una ciudad'),
-    writeln('4. Configuración TMC (Tiempo Mínimo de Conexión)'),
-    writeln('5. Buscar rutas válidas entre dos ciudades'),
-    writeln('6. Ruta de costo económico mínimo'),
+    writeln('4. Configuracion TMC (Tiempo Minimo de Conexion)'),
+    writeln('5. Buscar rutas validas entre dos ciudades'),
+    writeln('6. Ruta de costo economico minimo'),
     writeln('7. Ruta de menor tiempo total'),
     writeln('8. Reporte ordenado de itinerarios (costo/tiempo y filtros)'),
     writeln('9. Salir'),
-    write('Seleccione una opción: '),
+    write('Seleccione una opcion: '),
     read_line_to_string(user_input, Opcion),
     ejecutar_opcion(Opcion).
 
 % ===============================================================
-% Ejecución de opciones del Menú
+% Ejecucion de opciones del Menu
 % ===============================================================
 
-% Opción 1: Cargar archivo de vuelos
+% Opcion 1: Cargar archivo de vuelos
 ejecutar_opcion("1") :-
     nl,
     write('Ingrese la ruta del archivo [por defecto: ../vuelos.txt]: '),
@@ -46,7 +46,7 @@ ejecutar_opcion("1") :-
     bucle_menu.
 
 
-% Opción 2: Consultar vuelos que salen de una ciudad
+% Opcion 2: Consultar vuelos que salen de una ciudad
 ejecutar_opcion("2") :-
     (   verificar_vuelos_cargados
     ->  nl,
@@ -65,7 +65,7 @@ ejecutar_opcion("2") :-
     ).
 
 
-% Opción 3: Consultar vuelos que llegan a una ciudad
+% Opcion 3: Consultar vuelos que llegan a una ciudad
 ejecutar_opcion("3") :-
     (   verificar_vuelos_cargados
     ->  nl,
@@ -83,32 +83,32 @@ ejecutar_opcion("3") :-
     ;   bucle_menu
     ).
 
-% Opción 4: Configuración TMC
+% Opcion 4: Configuracion TMC
 ejecutar_opcion("4") :-
     nl,
     obtener_tmc(TmcActual),
-    format('Tiempo Mínimo de Conexión (TMC) actual: ~w minutos.~n', [TmcActual]),
+    format('Tiempo Minimo de Conexion (TMC) actual: ~w minutos.~n', [TmcActual]),
     write('Ingrese el nuevo valor en minutos (o Enter para mantener): '),
     read_line_to_string(user_input, Entrada),
     (   Entrada == ""
-    ->  writeln('No se modificó el TMC.')
+    ->  writeln('No se modifico el TMC.')
     ;   (   number_string(NuevoTmc, Entrada),
             integer(NuevoTmc),
             NuevoTmc >= 0
         ->  establecer_tmc(NuevoTmc),
             format('TMC actualizado exitosamente a ~w minutos.~n', [NuevoTmc])
-        ;   writeln('Error: Debe ingresar un número entero mayor o igual a 0.')
+        ;   writeln('Error: Debe ingresar un numero entero mayor o igual a 0.')
         )
     ),
     bucle_menu.
 
-% Opción 5: Buscar rutas válidas entre dos ciudades
+% Opcion 5: Buscar rutas validas entre dos ciudades
 ejecutar_opcion("5") :-
     (   verificar_vuelos_cargados
     ->  nl,
         (   pedir_origen_destino(Origen, Destino),
             pedir_dia(Dia)
-        ->  leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
+        ->  leer_entero_opcional('Maximo de escalas [Enter = sin limite]: ', MaxEscalas),
             mostrar_rutas(Origen, Destino, Dia, MaxEscalas)
         ;   true
         ),
@@ -116,13 +116,13 @@ ejecutar_opcion("5") :-
     ;   bucle_menu
     ).
 
-% Opción 6: Ruta de costo económico mínimo
+% Opcion 6: Ruta de costo economico minimo
 ejecutar_opcion("6") :-
     (   verificar_vuelos_cargados
     ->  nl,
         (   pedir_origen_destino(Origen, Destino),
             pedir_dia(Dia)
-        ->  leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
+        ->  leer_entero_opcional('Maximo de escalas [Enter = sin limite]: ', MaxEscalas),
             mostrar_optimizacion_criterio(costo, Origen, Destino, Dia, MaxEscalas)
         ;   true
         ),
@@ -130,13 +130,13 @@ ejecutar_opcion("6") :-
     ;   bucle_menu
     ).
 
-% Opción 7: Ruta de menor tiempo total
+% Opcion 7: Ruta de menor tiempo total
 ejecutar_opcion("7") :-
     (   verificar_vuelos_cargados
     ->  nl,
         (   pedir_origen_destino(Origen, Destino),
             pedir_dia(Dia)
-        ->  leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
+        ->  leer_entero_opcional('Maximo de escalas [Enter = sin limite]: ', MaxEscalas),
             mostrar_optimizacion_criterio(tiempo, Origen, Destino, Dia, MaxEscalas)
         ;   true
         ),
@@ -144,7 +144,7 @@ ejecutar_opcion("7") :-
     ;   bucle_menu
     ).
 
-% Opción 8: Reporte ordenado de itinerarios con filtros
+% Opcion 8: Reporte ordenado de itinerarios con filtros
 ejecutar_opcion("8") :-
     (   verificar_vuelos_cargados
     ->  nl,
@@ -154,9 +154,9 @@ ejecutar_opcion("8") :-
             write('Seleccione criterio [1]: '),
             read_line_to_string(user_input, EntradaCriterio),
             elegir_criterio(EntradaCriterio, Criterio),
-            leer_entero_opcional('Máximo de escalas [Enter = sin límite]: ', MaxEscalas),
-            leer_numero_positivo_opcional('Costo máximo en $ [Enter = sin límite]: ', MaxCosto),
-            leer_entero_positivo_opcional('Tiempo máximo en minutos [Enter = sin límite]: ', MaxTiempo),
+            leer_entero_opcional('Maximo de escalas [Enter = sin limite]: ', MaxEscalas),
+            leer_numero_positivo_opcional('Costo maximo en $ [Enter = sin limite]: ', MaxCosto),
+            leer_entero_positivo_opcional('Tiempo maximo en minutos [Enter = sin limite]: ', MaxTiempo),
             construir_filtros([max_escalas-MaxEscalas, max_costo-MaxCosto, max_tiempo-MaxTiempo], Filtros),
             reporte_itinerarios(Origen, Destino, Dia, Criterio, Filtros)
         ;   true
@@ -165,14 +165,14 @@ ejecutar_opcion("8") :-
     ;   bucle_menu
     ).
 
-% Opción 9: Salir
+% Opcion 9: Salir
 ejecutar_opcion("9") :-
     nl,
-    writeln('¡Gracias por utilizar LogiExpress! Hasta luego.'), !.
+    writeln('Gracias por utilizar LogiExpress! Hasta luego.'), !.
 
-% Opción inválida
+% Opcion invalida
 ejecutar_opcion(_) :-
-    writeln('\nOpción inválida. Intente de nuevo.'),
+    writeln('\nOpcion invalida. Intente de nuevo.'),
     bucle_menu.
 
 % ===============================================================
@@ -185,10 +185,10 @@ determinar_ruta(Entrada, RutaFinal) :-
     ;   RutaFinal = Entrada
     ).
 
-% Busca la ubicación real de vuelos.txt:
-% 1. En la carpeta actual (si se ejecuta desde la raíz: vuelos.txt)
+% Busca la ubicacion real de vuelos.txt:
+% 1. En la carpeta actual (si se ejecuta desde la raiz: vuelos.txt)
 % 2. En la carpeta superior (si se ejecuta desde prolog/: ../vuelos.txt)
-% 3. Relativo al archivo fuente main.pl (si se abrió desde cualquier otro directorio)
+% 3. Relativo al archivo fuente main.pl (si se abrio desde cualquier otro directorio)
 ruta_defecto_vuelos(RutaFinal) :-
     (   exists_file('vuelos.txt')
     ->  RutaFinal = 'vuelos.txt'
@@ -214,11 +214,11 @@ imprimir_lista_vuelos([Vuelo | Resto]) :-
 imprimir_vuelo(vuelo(Origen, Destino, SalidaMin, LlegadaMin, Precio, Codigo, Dias)) :-
     minutos_a_hora(SalidaMin, SalidaStr),
     minutos_a_hora(LlegadaMin, LlegadaStr),
-    format('  [~w] ~w -> ~w | Salida: ~w | Llegada: ~w | Precio: $~2f | Días: ~w~n',
+    format('  [~w] ~w -> ~w | Salida: ~w | Llegada: ~w | Precio: $~2f | Dias: ~w~n',
            [Codigo, Origen, Destino, SalidaStr, LlegadaStr, Precio, Dias]).
 
 % ===============================================================
-% Predicados auxiliares del Módulo 3
+% Predicados auxiliares del Modulo 3
 % ===============================================================
 
 /* Lee un entero opcional: Enter produce ninguno.
@@ -232,13 +232,13 @@ leer_entero_opcional(Prompt, Resultado) :-
             integer(Valor),
             Valor >= 0
         ->  Resultado = Valor
-        ;   format('~nError: "~w" no es válido. Debe ingresar un número entero mayor o igual a 0.~n', [Entrada]),
+        ;   format('~nError: "~w" no es valido. Debe ingresar un numero entero mayor o igual a 0.~n', [Entrada]),
             leer_entero_opcional(Prompt, Resultado)
         )
     ).
 
-/* Lee un número (entero o decimal) opcional positivo (> 0): Enter produce ninguno.
-   Si el valor no es un número > 0, muestra error y solicita reingreso. */
+/* Lee un numero (entero o decimal) opcional positivo (> 0): Enter produce ninguno.
+   Si el valor no es un numero > 0, muestra error y solicita reingreso. */
 leer_numero_positivo_opcional(Prompt, Resultado) :-
     write(Prompt),
     read_line_to_string(user_input, Entrada),
@@ -248,7 +248,7 @@ leer_numero_positivo_opcional(Prompt, Resultado) :-
             number(Valor),
             Valor > 0
         ->  Resultado = Valor
-        ;   format('~nError: "~w" no es válido. Debe ingresar un número mayor a 0.~n', [Entrada]),
+        ;   format('~nError: "~w" no es valido. Debe ingresar un numero mayor a 0.~n', [Entrada]),
             leer_numero_positivo_opcional(Prompt, Resultado)
         )
     ).
@@ -264,7 +264,7 @@ leer_entero_positivo_opcional(Prompt, Resultado) :-
             integer(Valor),
             Valor > 0
         ->  Resultado = Valor
-        ;   format('~nError: "~w" no es válido. Debe ingresar un número entero mayor a 0.~n', [Entrada]),
+        ;   format('~nError: "~w" no es valido. Debe ingresar un numero entero mayor a 0.~n', [Entrada]),
             leer_entero_positivo_opcional(Prompt, Resultado)
         )
     ).
@@ -285,17 +285,17 @@ construir_filtros([Nombre-Valor | Resto], Filtros) :-
 elegir_criterio("2", tiempo) :- !.
 elegir_criterio(_, costo).
 
-/* Muestra la ruta óptima según el criterio seleccionado */
+/* Muestra la ruta optima segun el criterio seleccionado */
 mostrar_optimizacion_criterio(Criterio, Origen, Destino, Dia, MaxEscalas) :-
     construir_filtro_escalas(MaxEscalas, Filtros),
     buscar_rutas(Origen, Destino, Dia, Rutas),
     filtrar_rutas(Rutas, Filtros, Candidatas),
     (   Candidatas == []
-    ->  format('~nNo hay itinerarios de ~w a ~w para el día ~w.~n', [Origen, Destino, Dia])
+    ->  format('~nNo hay itinerarios de ~w a ~w para el dia ~w.~n', [Origen, Destino, Dia])
     ;   ordenar_rutas(Criterio, Candidatas, [RutaOptima | _]),
         nl,
         (   Criterio == costo
-        ->  writeln('=== Ruta de costo económico mínimo ===')
+        ->  writeln('=== Ruta de costo economico minimo ===')
         ;   writeln('=== Ruta de menor tiempo total ===')
         ),
         imprimir_detalle_ruta(RutaOptima, 1)
@@ -303,11 +303,11 @@ mostrar_optimizacion_criterio(Criterio, Origen, Destino, Dia, MaxEscalas) :-
 
 
 % ===============================================================
-% Verificación y lectura validada de ciudades
+% Verificacion y lectura validada de ciudades
 % ===============================================================
 
 /* Solicita una ciudad por consola, recortando espacios y verificando
-   sin distinguir mayúsculas ni minúsculas si existe en los vuelos cargados.
+   sin distinguir mayusculas ni minusculas si existe en los vuelos cargados.
    Si existe, retorna el nombre oficial. De lo contrario, muestra un mensaje
    de error con la lista de ciudades disponibles y falla. */
 pedir_ciudad(Prompt, CiudadOficial) :-
@@ -338,21 +338,21 @@ mostrar_ciudades_disponibles :-
     atomic_list_concat(Ciudades, ', ', StrCiudades),
     format('Ciudades disponibles: ~w~n', [StrCiudades]).
 
-/* Solicita el día del viaje y valida que sea un día reconocido.
-   Si no es válido, muestra el mensaje de error con los valores aceptados y falla. */
+/* Solicita el dia del viaje y valida que sea un dia reconocido.
+   Si no es valido, muestra el mensaje de error con los valores aceptados y falla. */
 pedir_dia(DiaOficial) :-
-    write('Día del viaje (ej. L, martes): '),
+    write('Dia del viaje (ej. L, martes): '),
     read_line_to_string(user_input, Entrada),
     (   normalizar_dia(Entrada, DiaOficial)
     ->  true
     ;   normalize_space(string(EntradaLimpia), Entrada),
-        format('~nError: "~w" no es un día válido.~n', [EntradaLimpia]),
+        format('~nError: "~w" no es un dia valido.~n', [EntradaLimpia]),
         writeln('Valores aceptados: L, M, Mi, J, V, S, D (o nombres completos: Lunes, Martes...).'),
         fail
     ).
 
 % ===============================================================
-% Verificación de vuelos cargados
+% Verificacion de vuelos cargados
 % ===============================================================
 
 verificar_vuelos_cargados :-

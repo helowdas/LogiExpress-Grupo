@@ -2,7 +2,7 @@
 :- consult('utilidades.pl').
 
  
-/* Búsqueda de rutas válidas (DFS) */
+/* Busqueda de rutas validas (DFS) */
 
 /* Busca una ruta valida entre Origen y Destino para un Dia respetando dias de operacion, control de ciclos y TMC. */
 buscar_ruta(Origen, Destino, Dia, Ruta) :-

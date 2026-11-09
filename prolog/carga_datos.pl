@@ -4,8 +4,8 @@
 :- dynamic vuelo/7.
 
 /* ===============================================================
-   Configuración Global del TMC (Tiempo Mínimo de Conexión)
-   Valor por defecto: 45 minutos (configurable dinámicamente) 
+   Configuracion Global del TMC (Tiempo Minimo de Conexion)
+   Valor por defecto: 45 minutos (configurable dinamicamente) 
    ===============================================================
    */
 :- dynamic tmc/1.
@@ -23,7 +23,7 @@ establecer_tmc(NuevoMin) :-
     assertz(tmc(NuevoMin)).
 
 /* ===============================================
-      Consultas Básicas de Vuelos por Ciudad 
+      Consultas Basicas de Vuelos por Ciudad 
    ===============================================
     */
 
@@ -35,7 +35,7 @@ ciudades_disponibles(Ciudades) :-
     sort(Todas, Ciudades).
 
 /* Normaliza el nombre de una ciudad ingresado por el usuario:
-   recorta espacios en blanco y compara sin distinguir mayúsculas ni minúsculas
+   recorta espacios en blanco y compara sin distinguir mayusculas ni minusculas
    con respecto a las ciudades registradas en la base de datos de vuelos. */
 normalizar_ciudad(Entrada, CiudadOficial) :-
     normalize_space(string(EntradaLimpia), Entrada),

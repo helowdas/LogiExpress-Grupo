@@ -78,14 +78,24 @@ leer_lineas(Stream):-
 ==============*/
 leer_lineas(Stream):-
     read_line_to_string(Stream,Linea),
-    /*procesar las lineas*/
+    /*procesar las lineas; una linea invalida se informa y se ignora*/
     ( Linea == "" ->
         true
     ;
-        split_string(Linea, "|", "\r\n", [Origen, Destino, SalidaStr, LlegadaStr, PrecioStr, Codigo, Dias]),
-        hora_a_minutos(SalidaStr, SalidaMin),
-        hora_a_minutos(LlegadaStr, LlegadaMin),
-        number_string(PrecioNum, PrecioStr),
-        assertz(vuelo(Origen, Destino, SalidaMin, LlegadaMin, PrecioNum, Codigo, Dias))
+        (   catch(procesar_linea(Linea), _, fail)
+        ->  true
+        ;   format(user_error, 'Aviso: linea ignorada (formato invalido): ~w~n', [Linea])
+        )
     ),
     leer_lineas(Stream).
+
+/* Parsea y valida una linea antes de registrarla como vuelo */
+procesar_linea(Linea) :-
+    split_string(Linea, "|", "\r\n ", Campos),
+    Campos = [Origen, Destino, SalidaStr, LlegadaStr, PrecioStr, Codigo, Dias],
+    hora_a_minutos(SalidaStr, SalidaMin),
+    hora_a_minutos(LlegadaStr, LlegadaMin),
+    number_string(PrecioNum, PrecioStr),
+    PrecioNum >= 0,
+    Origen \= "", Destino \= "", Codigo \= "",
+    assertz(vuelo(Origen, Destino, SalidaMin, LlegadaMin, PrecioNum, Codigo, Dias)).
